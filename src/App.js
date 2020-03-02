@@ -7,11 +7,33 @@ import HomePage from './pages/homepage/homepage.component';
 import ShopPage from './pages/shop/shop.component';
 import SignInAndSignOutPage from './pages/sign-in-and-sign-up/sign-in-and-sign-up.component';
 import Header from './components/header-component/header.component';
+import { auth } from './firebase/firebase.utils'
 
-function App() {
+class App extends React.Component {
+  constructor() {
+    super();
+
+    this.state={
+      currentUser: null
+    }
+  }
+
+  componentDidMount() {
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(user => {
+      this.setState({currentUser: user})
+    })
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeFromAuth();
+  }
+
+  unsubscribeFromAuth = null 
+
+  render(){
   return (
     <div>
-      <Header />
+      <Header currentUser={this.state.currentUser} />
     <Switch>
       <Route exact path='/signin' component={SignInAndSignOutPage} />
       <Route exact path='/' component={HomePage} />
@@ -19,6 +41,7 @@ function App() {
     </Switch>
     </div>
   );
+}
 }
 
 export default App;
